@@ -1,2 +1,2 @@
-name: install-chocolatey
+name: install-chocolatey2
 command: "./install-chocolatey.ps1"
