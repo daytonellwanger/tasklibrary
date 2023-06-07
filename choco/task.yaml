@@ -5,5 +5,3 @@ inputs:
     defaultValue: ""
     type: "string"
     required: true
-  inputtwo:
-    type: "number"
