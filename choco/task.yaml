@@ -1,5 +1,5 @@
 name: choco
-command: "./choco.ps1 -Package parameters('package')"
+command: "./choco.ps1 -Package {{package}}"
 inputs:
   package:
     defaultValue: ""
