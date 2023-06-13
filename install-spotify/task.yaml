@@ -1,0 +1,2 @@
+name: install-spotify
+command: "./install.ps1"
