@@ -11,7 +11,7 @@ $trigger.Enabled = $true
 
 $action = $Task.Actions.Create(0)
 $action.Path = 'PowerShell.exe'
-$action.Arguments = "Set-ExecutionPolicy Bypass -Scope Process -Force; choco install spotify -y"
+$action.Arguments = 'Set-ExecutionPolicy Bypass -Scope Process -Force; $env:ChocolateyInstall="C:\ProgramData\chocoportable"; choco install spotify -y'
 
 $taskFolder = $ShedService.GetFolder("\")
 $taskFolder.RegisterTaskDefinition('Customizations', $Task , 6, 'Users', $null, 4)
