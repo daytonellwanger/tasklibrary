@@ -1,0 +1,7 @@
+name: choco-as-user
+command: "./chocoAsUser.ps1 -Package {{package}}"
+inputs:
+  package:
+    defaultValue: ""
+    type: "string"
+    required: true

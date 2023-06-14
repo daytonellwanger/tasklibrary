@@ -2,8 +2,8 @@
 if (!(Test-Path -PathType Container "C:\DevBoxCustomizations")) {
     New-Item -Path "C:\DevBoxCustomizations" -ItemType Directory
     New-Item -Path "C:\DevBoxCustomizations\lockfile" -ItemType File
-    Copy-Item "./runonce.ps1" -Destination "C:\DevBoxCustomizations"
-    Copy-Item "./cleanup.ps1" -Destination "C:\DevBoxCustomizations"
+    Copy-Item "./runAsUser.ps1" -Destination "C:\DevBoxCustomizations"
+    Copy-Item "./cleanupScheduledTasks.ps1" -Destination "C:\DevBoxCustomizations"
 }
 
 # Reference: https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-objects
@@ -22,7 +22,7 @@ $Trigger.Repetition.Interval="PT1M"
 
 $Action = $Task.Actions.Create(0)
 $Action.Path = "PowerShell.exe"
-$Action.Arguments = "Set-ExecutionPolicy Bypass -Scope Process -Force; C:\DevBoxCustomizations\cleanup.ps1"
+$Action.Arguments = "Set-ExecutionPolicy Bypass -Scope Process -Force; C:\DevBoxCustomizations\cleanupScheduledTasks.ps1"
 
 $TaskFolder = $ShedService.GetFolder("\")
 $TaskFolder.RegisterTaskDefinition("CustomizationsCleanup", $Task , 6, "NT AUTHORITY\SYSTEM", $null, 5)
@@ -38,7 +38,7 @@ $Trigger.Enabled = $true
 
 $Action = $Task.Actions.Create(0)
 $Action.Path = "PowerShell.exe"
-$Action.Arguments = "Set-ExecutionPolicy Bypass -Scope Process -Force; C:\DevBoxCustomizations\runonce.ps1"
+$Action.Arguments = "Set-ExecutionPolicy Bypass -Scope Process -Force; C:\DevBoxCustomizations\runAsUser.ps1"
 
 $TaskFolder = $ShedService.GetFolder("\")
 $TaskFolder.RegisterTaskDefinition("Customizations", $Task , 6, "Users", $null, 4)
