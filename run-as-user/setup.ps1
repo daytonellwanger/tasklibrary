@@ -38,7 +38,7 @@ $Trigger.Enabled = $true
 
 $Action = $Task.Actions.Create(0)
 $Action.Path = "pwsh.exe"
-$Action.Arguments = "Set-ExecutionPolicy Bypass -Scope Process -Force; C:\DevBoxCustomizations\runAsUser.ps1"
+$Action.Arguments = "C:\DevBoxCustomizations\runAsUser.ps1"
 
 $TaskFolder = $ShedService.GetFolder("\")
 $TaskFolder.RegisterTaskDefinition("Customizations", $Task , 6, "Users", $null, 4)
