@@ -37,8 +37,8 @@ $Trigger = $Task.Triggers.Create(9)
 $Trigger.Enabled = $true
 
 $Action = $Task.Actions.Create(0)
-$Action.Path = "pwsh.exe"
-$Action.Arguments = "C:\DevBoxCustomizations\runAsUser.ps1"
+$Action.Path = "PowerShell.exe"
+$Action.Arguments = "pwsh.exe -Command C:\DevBoxCustomizations\runAsUser.ps1"
 
 $TaskFolder = $ShedService.GetFolder("\")
 $TaskFolder.RegisterTaskDefinition("Customizations", $Task , 6, "Users", $null, 4)
