@@ -3,4 +3,4 @@ Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 Install-Module Microsoft.WinGet.Client -Scope AllUsers
 Repair-WinGetPackageManager -Latest
 
-echo "Repair-WinGetPackageManager -Latest" > "C:\DevBoxCustomizations\runAsUser.ps1"
+Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Repair-WinGetPackageManager -Latest"
