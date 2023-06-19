@@ -1,1 +1,1 @@
-Remove-Item -Path "C:\DevBoxCustomizations\lockfile"
+Remove-Item -Path C:\DevBoxCustomizations\lockfile
