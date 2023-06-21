@@ -1,0 +1,7 @@
+name: winget-configure
+command: "./configure.ps1 -DownloadUrl {{downloadUrl}}"
+inputs:
+  downloadUrl:
+    defaultValue: ""
+    type: "string"
+    required: true
