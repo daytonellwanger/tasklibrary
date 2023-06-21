@@ -1,10 +1,24 @@
 param(
-     [Parameter()]
-     [string]$DownloadUrl
+    [Parameter()]
+    [string]$ConfigurationFile,
+    [Parameter()]
+    [string]$DownloadUrl,
+    [Parameter()]
+    [bool]$RunAsUser
  )
 
-Invoke-WebRequest -Uri $DownloadUrl -OutFile C:\DevBoxCustomizations\winget.yaml
+if ($DownloadUrl) {
+    $ConfigurationFileDir = Split-Path -Path $ConfigurationFile
+    if(-Not (Test-Path -Path $ConfigurationFileDir))
+    {
+        New-Item -ItemType Directory -Path $ConfigurationFileDir
+    }
 
-# Run in both system context and user context
-pwsh.exe -MTA -Command "Get-WinGetConfiguration -File C:\DevBoxCustomizations\winget.yaml | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
-Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Get-WinGetConfiguration -File C:\DevBoxCustomizations\winget.yaml | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+    Invoke-WebRequest -Uri $DownloadUrl -OutFile $ConfigurationFile
+}
+
+if ($RunAsUser) {
+    Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+} else {
+    pwsh.exe -MTA -Command "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+}

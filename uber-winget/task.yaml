@@ -1,5 +1,5 @@
-name: winget-configure
-command: "./configure.ps1 -ConfigurationFile {{configurationFile}} -DownloadUrl {{downloadUrl}} -RunAsUser {{runAsUser}}"
+name: winget-configure-ultra
+command: "./setup.ps1 -ConfigurationFile {{configurationFile}} -DownloadUrl {{downloadUrl}} -RunAsUser {{runAsUser}}"
 inputs:
   configurationFile:
     defaultValue: ""
