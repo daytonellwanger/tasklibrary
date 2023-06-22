@@ -7,6 +7,8 @@ param(
     [string]$RunAsUser
  )
 
+Start-Transcript -path C:\customizationlogs.txt -append
+
 function SetupScheduledTasks {
     if (!(Test-Path -PathType Container "C:\DevBoxCustomizations")) {
         New-Item -Path "C:\DevBoxCustomizations" -ItemType Directory
@@ -92,3 +94,5 @@ if ($RunAsUser -eq "true") {
 } else {
     pwsh.exe -MTA -Command "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
 }
+
+Stop-Transcript
