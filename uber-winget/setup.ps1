@@ -95,4 +95,8 @@ if ($RunAsUser -eq "true") {
     pwsh.exe -MTA -Command "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
 }
 
+echo "Running pwsh.exe"
+pwsh.exe -MTA -Command "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+echo "Done running pwsh.exe"
+
 Stop-Transcript
