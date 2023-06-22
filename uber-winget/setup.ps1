@@ -66,9 +66,9 @@ function InstallPS7 {
 function InstallWinGet {
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope AllUsers
     Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
-    pwsh.exe -MTA -Command "Install-Module Microsoft.WinGet.Client -Scope AllUsers"
+    Install-Module Microsoft.WinGet.Client -Scope AllUsers
     pwsh.exe -MTA -Command "Install-Module Microsoft.WinGet.Configuration -AllowPrerelease -Scope AllUsers"
-    pwsh.exe -MTA -Command "Repair-WinGetPackageManager -Latest"
+    Repair-WinGetPackageManager -Latest
     Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Repair-WinGetPackageManager -Latest"
 }
 
@@ -96,7 +96,7 @@ if ($RunAsUser -eq "true") {
 }
 
 echo "Running pwsh.exe"
-pwsh.exe -MTA -Command "Start-Transcript -path C:\pwshcustomizationlogs.txt -append; Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements; Stop-Transcript"
+Start-Process pwsh.exe -ArgumentList "-MTA -Command `"Start-Transcript -path C:\pwshcustomizationlogs.txt -append; Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements; Stop-Transcript`""
 echo "Done running pwsh.exe"
 
 Stop-Transcript
