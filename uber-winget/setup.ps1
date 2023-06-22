@@ -69,6 +69,7 @@ function InstallWinGet {
     Install-Module Microsoft.WinGet.Client -Scope AllUsers
     pwsh.exe -MTA -Command "Install-Module Microsoft.WinGet.Configuration -AllowPrerelease -Scope AllUsers"
     Repair-WinGetPackageManager -Latest
+    pwsh.exe -MTA -Command "Repair-WinGetPackageManager -Latest"
     Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Repair-WinGetPackageManager -Latest"
 }
 
@@ -92,11 +93,8 @@ if ($DownloadUrl) {
 if ($RunAsUser -eq "true") {
     Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
 } else {
-    # pwsh.exe -MTA -Command "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+    Start-Process pwsh.exe -ArgumentList "-MTA -Command `"Start-Transcript -path C:\pwshcustomizationlogs.txt -append; Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements; Stop-Transcript`""
 }
 
-echo "Running pwsh.exe"
-Start-Process pwsh.exe -ArgumentList "-MTA -Command `"Start-Transcript -path C:\pwshcustomizationlogs.txt -append; Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements; Stop-Transcript`""
-echo "Done running pwsh.exe"
 
 Stop-Transcript
