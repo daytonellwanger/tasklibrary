@@ -49,7 +49,7 @@ function SetupScheduledTasks {
 
     $Action = $Task.Actions.Create(0)
     $Action.Path = "PowerShell.exe"
-    $Action.Arguments = "pwsh.exe -Command C:\DevBoxCustomizations\runAsUser.ps1"
+    $Action.Arguments = "pwsh.exe -MTA -Command C:\DevBoxCustomizations\runAsUser.ps1"
 
     $TaskFolder = $ShedService.GetFolder("\")
     $TaskFolder.RegisterTaskDefinition("Customizations", $Task , 6, "Users", $null, 4)
