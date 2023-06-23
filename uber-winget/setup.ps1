@@ -93,7 +93,7 @@ if ($DownloadUrl) {
 if ($RunAsUser -eq "true") {
     Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
 } else {
-    Start-Process pwsh.exe -ArgumentList "-MTA -Command `"Start-Transcript -path C:\pwshcustomizationlogs.txt -append; Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements; Stop-Transcript`""
+    # Start-Process pwsh.exe -ArgumentList "-MTA -Command `"Start-Transcript -path C:\pwshcustomizationlogs.txt -append; Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements; Stop-Transcript`""
 }
 
 
