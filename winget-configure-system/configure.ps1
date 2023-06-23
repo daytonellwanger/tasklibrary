@@ -1,1 +1,1 @@
-pwsh.exe -MTA -Command "Get-WinGetConfiguration -File C:\DevBoxCustomizationWinget\system.yaml | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+pwsh.exe -MTA -Command "Start-Transcript -path C:\wingetconfiguresystemlogs.txt -append; Get-WinGetConfiguration -File C:\DevBoxCustomizationWinget\system.yaml | Invoke-WinGetConfiguration -AcceptConfigurationAgreements; Stop-Transcript"
