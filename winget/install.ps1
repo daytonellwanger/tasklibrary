@@ -5,6 +5,7 @@ param(
 
 # Run in both system context and user context
 Start-Transcript -path C:\manualinstall.txt -append
-pwsh.exe -MTA -Command "Install-WinGetPackage -Id $($Package)" > test.txt
+pwsh.exe -MTA -Command "Install-WinGetPackage -Id $($Package)" > C:\initialinstalltest.txt
 Stop-Transcript
+Restart-Computer
 # Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Install-WinGetPackage -Id $($Package)"

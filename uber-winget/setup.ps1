@@ -15,11 +15,28 @@ function SetupScheduledTasks {
         New-Item -Path "C:\DevBoxCustomizations\lockfile" -ItemType File
         Copy-Item "./runAsUser.ps1" -Destination "C:\DevBoxCustomizations"
         Copy-Item "./cleanupScheduledTasks.ps1" -Destination "C:\DevBoxCustomizations"
+        Copy-Item "./runassystem.ps1" -Destination "C:\DevBoxCustomizations"
     }
 
     # Reference: https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-objects
     $ShedService = New-Object -comobject "Schedule.Service"
     $ShedService.Connect()
+
+    # Run SYSTEM stuff on boot
+    $Task = $ShedService.NewTask(0)
+    $Task.RegistrationInfo.Description = "Apply customizations as system"
+    $Task.Settings.Enabled = $true
+    $Task.Settings.AllowDemandStart = $true
+
+    $Trigger = $Task.Triggers.Create(8)
+    $Trigger.Enabled = $true
+
+    $Action = $Task.Actions.Create(0)
+    $Action.Path = "PowerShell.exe"
+    $Action.Arguments = "pwsh.exe -MTA -Command C:\DevBoxCustomizations\runassystem.ps1"
+
+    $TaskFolder = $ShedService.GetFolder("\")
+    $TaskFolder.RegisterTaskDefinition("RunCustomizationsAsSystem", $Task , 6, "NT AUTHORITY\SYSTEM", $null, 5)
 
     # Schedule the cleanup script to run every minute as the SYSTEM
     $Task = $ShedService.NewTask(0)
@@ -75,6 +92,7 @@ function InstallWinGet {
 
 # TODO - only need to setup scheduled tasks if running as user
 if (!(Test-Path -PathType Leaf "C:\DevBoxCustomizations\lockfile")) {
+    New-LocalUser -Name 'Test' -Description 'Test account.' -NoPassword
     SetupScheduledTasks
     InstallPS7
     InstallWinGet
