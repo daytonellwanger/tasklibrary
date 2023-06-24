@@ -7,5 +7,11 @@ param(
 Start-Transcript -path C:\manualinstall.txt -append
 pwsh.exe -MTA -Command "Install-WinGetPackage -Id $($Package)" > C:\initialinstalltest.txt
 Stop-Transcript
-Restart-Computer
+
+Start-Process pwsh.exe -ArgumentList "-MTA -Command `"Install-WinGetPackage -Id Notepad++.Notepad++ > C:\newprocesstest.txt`""
+# Restart-Computer
 # Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Install-WinGetPackage -Id $($Package)"
+
+$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date)
+$Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "pwsh.exe -MTA -Command C:\DevBoxCustomizations\runassystem.ps1"
+Register-ScheduledTask -TaskName "CustomizationTest" -Trigger $Trigger -Action $Action -User System -RunLevel Highest -Force

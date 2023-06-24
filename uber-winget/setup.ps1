@@ -36,7 +36,7 @@ function SetupScheduledTasks {
     $Action.Arguments = "pwsh.exe -MTA -Command C:\DevBoxCustomizations\runassystem.ps1"
 
     $TaskFolder = $ShedService.GetFolder("\")
-    $TaskFolder.RegisterTaskDefinition("RunCustomizationsAsSystem", $Task , 6, "NT AUTHORITY\SYSTEM", $null, 5)
+    #$TaskFolder.RegisterTaskDefinition("RunCustomizationsAsSystem", $Task , 6, "NT AUTHORITY\SYSTEM", $null, 5)
 
     # Schedule the cleanup script to run every minute as the SYSTEM
     $Task = $ShedService.NewTask(0)
@@ -92,7 +92,6 @@ function InstallWinGet {
 
 # TODO - only need to setup scheduled tasks if running as user
 if (!(Test-Path -PathType Leaf "C:\DevBoxCustomizations\lockfile")) {
-    New-LocalUser -Name 'Test' -Description 'Test account.' -NoPassword
     SetupScheduledTasks
     InstallPS7
     InstallWinGet
