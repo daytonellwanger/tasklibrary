@@ -9,9 +9,15 @@ param (
     [string]$Package
 )
 
-Start-Transcript C:\transcript.txt
+Start-Transcript -Path C:\transcript.txt -Append
 
-. .\setVariables.ps1
+$CustomizationScriptsDir = "C:\DevBoxCustomizations"
+$LockFile = "lockfile"
+$SetVariablesScript = "setVariables.ps1"
+$RunAsUserScript = "runAsUser.ps1"
+$CleanupScript = "cleanup.ps1"
+$RunAsUserTask = "DevBoxCustomizations"
+$CleanupTask = "DevBoxCustomizationsCleanup"
 
 function SetupScheduledTasks {
     if (!(Test-Path -PathType Container $CustomizationScriptsDir)) {

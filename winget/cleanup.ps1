@@ -1,4 +1,10 @@
-. .\setVariables.ps1
+$CustomizationScriptsDir = "C:\DevBoxCustomizations"
+$LockFile = "lockfile"
+$SetVariablesScript = "setVariables.ps1"
+$RunAsUserScript = "runAsUser.ps1"
+$CleanupScript = "cleanup.ps1"
+$RunAsUserTask = "DevBoxCustomizations"
+$CleanupTask = "DevBoxCustomizationsCleanup"
 
 if (!(Test-Path "$($CustomizationScriptsDir)\$($LockFile)")) {
     Unregister-ScheduledTask -TaskName $RunAsUserTask -Confirm:$false
