@@ -1,2 +1,0 @@
-name: winget-configure-system
-command: "./configure.ps1"

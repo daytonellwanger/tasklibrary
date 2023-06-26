@@ -1,1 +1,0 @@
-Install-WinGetPackage -Id Notepad++.Notepad++ > C:\notepadinstallassystemtest.txt

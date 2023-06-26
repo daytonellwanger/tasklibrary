@@ -4,10 +4,10 @@ param(
     [Parameter()]
     [string]$DownloadUrl,
     [Parameter()]
-    [string]$RunAsUser
+    [string]$RunAsUser,
+    [Parameter()]
+    [string]$Package
  )
-
-Start-Transcript -path C:\customizationlogs.txt -append
 
 function SetupScheduledTasks {
     if (!(Test-Path -PathType Container "C:\DevBoxCustomizations")) {
@@ -15,14 +15,13 @@ function SetupScheduledTasks {
         New-Item -Path "C:\DevBoxCustomizations\lockfile" -ItemType File
         Copy-Item "./runAsUser.ps1" -Destination "C:\DevBoxCustomizations"
         Copy-Item "./cleanupScheduledTasks.ps1" -Destination "C:\DevBoxCustomizations"
-        Copy-Item "./runassystem.ps1" -Destination "C:\DevBoxCustomizations"
     }
 
     # Reference: https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-objects
     $ShedService = New-Object -comobject "Schedule.Service"
     $ShedService.Connect()
 
-    # Schedule the cleanup script to run every minute as the SYSTEM
+    # Schedule the cleanup script to run every minute as SYSTEM
     $Task = $ShedService.NewTask(0)
     $Task.RegistrationInfo.Description = "Customizations cleanup"
     $Task.Settings.Enabled = $true
@@ -69,8 +68,8 @@ function InstallWinGet {
     Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
     Install-Module Microsoft.WinGet.Client -Scope AllUsers
     pwsh.exe -MTA -Command "Install-Module Microsoft.WinGet.Configuration -AllowPrerelease -Scope AllUsers"
-    Repair-WinGetPackageManager -Latest
-    pwsh.exe -MTA -Command "Repair-WinGetPackageManager -Latest"
+    # Repair-WinGetPackageManager -Latest
+    # pwsh.exe -MTA -Command "Repair-WinGetPackageManager -Latest"
     Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Repair-WinGetPackageManager -Latest"
 }
 
@@ -81,21 +80,28 @@ if (!(Test-Path -PathType Leaf "C:\DevBoxCustomizations\lockfile")) {
     InstallWinGet
 }
 
-if ($DownloadUrl) {
-    $ConfigurationFileDir = Split-Path -Path $ConfigurationFile
-    if(-Not (Test-Path -Path $ConfigurationFileDir))
-    {
-        New-Item -ItemType Directory -Path $ConfigurationFileDir
+if ($Package) {
+    if ($RunAsUser -eq "true") {
+        Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Install-WinGetPackage -Id $($Package)"
+    } else {
+        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Install-WinGetPackage -Id $($Package)`""}
+    }
+}
+
+if ($ConfigurationFile) {
+    if ($DownloadUrl) {
+        $ConfigurationFileDir = Split-Path -Path $ConfigurationFile
+        if(-Not (Test-Path -Path $ConfigurationFileDir))
+        {
+            New-Item -ItemType Directory -Path $ConfigurationFileDir
+        }
+
+        Invoke-WebRequest -Uri $DownloadUrl -OutFile $ConfigurationFile
     }
 
-    Invoke-WebRequest -Uri $DownloadUrl -OutFile $ConfigurationFile
+    if ($RunAsUser -eq "true") {
+        Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+    } else {
+        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements`""}
+    }
 }
-
-if ($RunAsUser -eq "true") {
-    Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
-} else {
-    Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Start-Transcript -path C:\b1.txt -append; Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements; Stop-Transcript`""}
-}
-
-
-Stop-Transcript
