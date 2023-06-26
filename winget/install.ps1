@@ -8,7 +8,15 @@ Start-Transcript -path C:\manualinstall.txt -append
 pwsh.exe -MTA -Command "Install-WinGetPackage -Id $($Package)" > C:\initialinstalltest.txt
 Stop-Transcript
 
-Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine='pwsh.exe -MTA -Command "Install-WinGetPackage -Id Notepad++.Notepad++ > C:\newprocesstest.txt"'}
+pwsh.exe -Command 'pwsh.exe -MTA -Command "Install-WinGetPackage -Id Notepad++.Notepad++" > C:\a1.txt'
+
+Invoke-WmiMethod -Class Win32_Process -Name Create -ArgumentList 'pwsh.exe -MTA -Command "Install-WinGetPackage -Id Notepad++.Notepad++ > C:\a2.txt"'
+
+([WmiClass]'Win32_Process').Create('pwsh.exe -MTA -Command "Install-WinGetPackage -Id Notepad++.Notepad++ > C:\a3.txt')
+
+Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine='pwsh.exe -MTA -Command "Install-WinGetPackage -Id Notepad++.Notepad++ > C:\a4.txt"'}
+
+
 
 # Restart-Computer
 # Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Install-WinGetPackage -Id $($Package)"
