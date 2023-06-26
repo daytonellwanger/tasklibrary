@@ -6,7 +6,7 @@ param(
 # Run in both system context and user context
 Start-Transcript -path C:\manualinstall.txt -append
 pwsh.exe -MTA -Command "Install-WinGetPackage -Id $($Package)" > C:\initialinstalltest.txt
-Stop-Transcript
+
 
 pwsh.exe -Command 'pwsh.exe -MTA -Command "Install-WinGetPackage -Id Notepad++.Notepad++" > C:\a1.txt'
 
@@ -24,3 +24,4 @@ Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{Comman
 $Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(2)
 $Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "pwsh.exe -MTA -Command C:\DevBoxCustomizations\runassystem.ps1"
 # Register-ScheduledTask -TaskName "CustomizationTest" -Trigger $Trigger -Action $Action -User System -RunLevel Highest -Force
+Stop-Transcript
