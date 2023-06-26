@@ -1,4 +1,4 @@
-param(
+param (
     [Parameter()]
     [string]$ConfigurationFile,
     [Parameter()]
@@ -7,14 +7,17 @@ param(
     [string]$RunAsUser,
     [Parameter()]
     [string]$Package
- )
+)
+
+. .\setVariables.ps1
 
 function SetupScheduledTasks {
-    if (!(Test-Path -PathType Container "C:\DevBoxCustomizations")) {
-        New-Item -Path "C:\DevBoxCustomizations" -ItemType Directory
-        New-Item -Path "C:\DevBoxCustomizations\lockfile" -ItemType File
-        Copy-Item "./runAsUser.ps1" -Destination "C:\DevBoxCustomizations"
-        Copy-Item "./cleanupScheduledTasks.ps1" -Destination "C:\DevBoxCustomizations"
+    if (!(Test-Path -PathType Container $CustomizationScriptsDir)) {
+        New-Item -Path $CustomizationScriptsDir -ItemType Directory
+        New-Item -Path "$($CustomizationScriptsDir)\$($LockFile)" -ItemType File
+        Copy-Item "./$($SetVariablesScript)" -Destination $CustomizationScriptsDir
+        Copy-Item "./$($RunAsUserScript)" -Destination $CustomizationScriptsDir
+        Copy-Item "./$($CleanupScript)" -Destination $CustomizationScriptsDir
     }
 
     # Reference: https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-objects
@@ -23,7 +26,7 @@ function SetupScheduledTasks {
 
     # Schedule the cleanup script to run every minute as SYSTEM
     $Task = $ShedService.NewTask(0)
-    $Task.RegistrationInfo.Description = "Customizations cleanup"
+    $Task.RegistrationInfo.Description = "Dev Box Customizations Cleanup"
     $Task.Settings.Enabled = $true
     $Task.Settings.AllowDemandStart = $false
 
@@ -33,14 +36,14 @@ function SetupScheduledTasks {
 
     $Action = $Task.Actions.Create(0)
     $Action.Path = "PowerShell.exe"
-    $Action.Arguments = "Set-ExecutionPolicy Bypass -Scope Process -Force; C:\DevBoxCustomizations\cleanupScheduledTasks.ps1"
+    $Action.Arguments = "Set-ExecutionPolicy Bypass -Scope Process -Force; $($CustomizationScriptsDir)\$($CleanupScript)"
 
     $TaskFolder = $ShedService.GetFolder("\")
-    $TaskFolder.RegisterTaskDefinition("CustomizationsCleanup", $Task , 6, "NT AUTHORITY\SYSTEM", $null, 5)
+    $TaskFolder.RegisterTaskDefinition("$($CleanupTask)", $Task , 6, "NT AUTHORITY\SYSTEM", $null, 5)
 
     # Schedule the script to be run in the user context on login
     $Task = $ShedService.NewTask(0)
-    $Task.RegistrationInfo.Description = "Customizations"
+    $Task.RegistrationInfo.Description = "Dev Box Customizations"
     $Task.Settings.Enabled = $true
     $Task.Settings.AllowDemandStart = $false
 
@@ -49,10 +52,10 @@ function SetupScheduledTasks {
 
     $Action = $Task.Actions.Create(0)
     $Action.Path = "PowerShell.exe"
-    $Action.Arguments = "pwsh.exe -MTA -Command C:\DevBoxCustomizations\runAsUser.ps1"
+    $Action.Arguments = "pwsh.exe -MTA -Command $($CustomizationScriptsDir)\$($RunAsUserScript)"
 
     $TaskFolder = $ShedService.GetFolder("\")
-    $TaskFolder.RegisterTaskDefinition("Customizations", $Task , 6, "Users", $null, 4)
+    $TaskFolder.RegisterTaskDefinition("$($RunAsUserTask)", $Task , 6, "Users", $null, 4)
 }
 
 function InstallPS7 {
@@ -66,15 +69,15 @@ function InstallPS7 {
 function InstallWinGet {
     Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope AllUsers
     Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
+
     Install-Module Microsoft.WinGet.Client -Scope AllUsers
+    Add-Content -Path "$($CustomizationScriptsDir)\$(RunAsUserScript)" -Value "Repair-WinGetPackageManager -Latest"
+
     pwsh.exe -MTA -Command "Install-Module Microsoft.WinGet.Configuration -AllowPrerelease -Scope AllUsers"
-    # Repair-WinGetPackageManager -Latest
-    # pwsh.exe -MTA -Command "Repair-WinGetPackageManager -Latest"
-    Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Repair-WinGetPackageManager -Latest"
 }
 
-# TODO - only need to setup scheduled tasks if running as user
-if (!(Test-Path -PathType Leaf "C:\DevBoxCustomizations\lockfile")) {
+# TODO only need to setup scheduled tasks if running as user
+if (!(Test-Path -PathType Leaf "$($CustomizationScriptsDir)\$($LockFile)")) {
     SetupScheduledTasks
     InstallPS7
     InstallWinGet
@@ -82,7 +85,7 @@ if (!(Test-Path -PathType Leaf "C:\DevBoxCustomizations\lockfile")) {
 
 if ($Package) {
     if ($RunAsUser -eq "true") {
-        Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Install-WinGetPackage -Id $($Package)"
+        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Install-WinGetPackage -Id $($Package)"
     } else {
         Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Install-WinGetPackage -Id $($Package)`""}
     }
@@ -100,7 +103,7 @@ if ($ConfigurationFile) {
     }
 
     if ($RunAsUser -eq "true") {
-        Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
     } else {
         Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements`""}
     }

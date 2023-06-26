@@ -1,1 +1,3 @@
-Remove-Item -Path C:\DevBoxCustomizations\lockfile
+. .\setVariables.ps1
+
+Remove-Item -Path "$($CustomizationScriptsDir)\$($LockFile)"
