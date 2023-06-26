@@ -9,6 +9,8 @@ param (
     [string]$Package
 )
 
+Start-Transcript C:\transcript.txt
+
 . .\setVariables.ps1
 
 function SetupScheduledTasks {
@@ -108,3 +110,5 @@ if ($ConfigurationFile) {
         Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements`""}
     }
 }
+
+Stop-Transcript
