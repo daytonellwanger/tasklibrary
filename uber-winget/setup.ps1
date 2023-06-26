@@ -22,22 +22,6 @@ function SetupScheduledTasks {
     $ShedService = New-Object -comobject "Schedule.Service"
     $ShedService.Connect()
 
-    # Run SYSTEM stuff on boot
-    $Task = $ShedService.NewTask(0)
-    $Task.RegistrationInfo.Description = "Apply customizations as system"
-    $Task.Settings.Enabled = $true
-    $Task.Settings.AllowDemandStart = $true
-
-    $Trigger = $Task.Triggers.Create(8)
-    $Trigger.Enabled = $true
-
-    $Action = $Task.Actions.Create(0)
-    $Action.Path = "PowerShell.exe"
-    $Action.Arguments = "pwsh.exe -MTA -Command C:\DevBoxCustomizations\runassystem.ps1"
-
-    $TaskFolder = $ShedService.GetFolder("\")
-    #$TaskFolder.RegisterTaskDefinition("RunCustomizationsAsSystem", $Task , 6, "NT AUTHORITY\SYSTEM", $null, 5)
-
     # Schedule the cleanup script to run every minute as the SYSTEM
     $Task = $ShedService.NewTask(0)
     $Task.RegistrationInfo.Description = "Customizations cleanup"
@@ -110,7 +94,7 @@ if ($DownloadUrl) {
 if ($RunAsUser -eq "true") {
     Add-Content -Path "C:\DevBoxCustomizations\runAsUser.ps1" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
 } else {
-    # Start-Process pwsh.exe -ArgumentList "-MTA -Command `"Start-Transcript -path C:\pwshcustomizationlogs.txt -append; Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements; Stop-Transcript`""
+    Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Start-Transcript -path C:\b1.txt -append; Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements; Stop-Transcript`""}
 }
 
 
