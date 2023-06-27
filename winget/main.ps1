@@ -61,7 +61,7 @@ function SetupScheduledTasks {
     $Action.Arguments = "pwsh.exe -MTA -Command $($CustomizationScriptsDir)\$($RunAsUserScript)"
 
     $TaskFolder = $ShedService.GetFolder("\")
-    $TaskFolder.RegisterTaskDefinition("$($RunAsUserTask)", $Task , 6, "Users", $null, 4)
+    $TaskFolder.RegisterTaskDefinition("$($RunAsUserTask)", $Task , 6, "BUILTIN\Administrators", $null, 4)
 }
 
 function InstallPS7 {
