@@ -52,6 +52,7 @@ function SetupScheduledTasks {
     $Task.RegistrationInfo.Description = "Dev Box Customizations"
     $Task.Settings.Enabled = $true
     $Task.Settings.AllowDemandStart = $false
+    $Task.Principal.RunLevel = 1
 
     $Trigger = $Task.Triggers.Create(9)
     $Trigger.Enabled = $true
@@ -61,7 +62,7 @@ function SetupScheduledTasks {
     $Action.Arguments = "pwsh.exe -MTA -Command $($CustomizationScriptsDir)\$($RunAsUserScript)"
 
     $TaskFolder = $ShedService.GetFolder("\")
-    $TaskFolder.RegisterTaskDefinition("$($RunAsUserTask)", $Task , 6, "BUILTIN\Administrators", $null, 4)
+    $TaskFolder.RegisterTaskDefinition("$($RunAsUserTask)", $Task , 6, "Users", $null, 4)
 }
 
 function InstallPS7 {
