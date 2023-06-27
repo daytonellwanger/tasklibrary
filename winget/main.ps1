@@ -9,8 +9,6 @@ param (
     [string]$Package
 )
 
-Start-Transcript -Path C:\transcript.txt -Append
-
 $CustomizationScriptsDir = "C:\DevBoxCustomizations"
 $LockFile = "lockfile"
 $RunAsUserScript = "runAsUser.ps1"
@@ -92,9 +90,9 @@ if (!(Test-Path -PathType Leaf "$($CustomizationScriptsDir)\$($LockFile)")) {
 
 if ($Package) {
     if ($RunAsUser -eq "true") {
-        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Install-WinGetPackage -Id $($Package) > C:\Users\daellwan\b1.txt"
+        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Install-WinGetPackage -Id $($Package)"
     } else {
-        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Install-WinGetPackage -Id $($Package) > C:\b2.txt`""}
+        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Install-WinGetPackage -Id $($Package)`""}
     }
 }
 
@@ -110,10 +108,8 @@ if ($ConfigurationFile) {
     }
 
     if ($RunAsUser -eq "true") {
-        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements > C:\Users\daellwan\a1.txt"
+        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
     } else {
-        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements > C:\a2.txt`""}
+        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements`""}
     }
 }
-
-Stop-Transcript
