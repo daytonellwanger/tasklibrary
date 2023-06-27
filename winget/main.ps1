@@ -13,7 +13,6 @@ Start-Transcript -Path C:\transcript.txt -Append
 
 $CustomizationScriptsDir = "C:\DevBoxCustomizations"
 $LockFile = "lockfile"
-$SetVariablesScript = "setVariables.ps1"
 $RunAsUserScript = "runAsUser.ps1"
 $CleanupScript = "cleanup.ps1"
 $RunAsUserTask = "DevBoxCustomizations"
@@ -23,7 +22,6 @@ function SetupScheduledTasks {
     if (!(Test-Path -PathType Container $CustomizationScriptsDir)) {
         New-Item -Path $CustomizationScriptsDir -ItemType Directory
         New-Item -Path "$($CustomizationScriptsDir)\$($LockFile)" -ItemType File
-        Copy-Item "./$($SetVariablesScript)" -Destination $CustomizationScriptsDir
         Copy-Item "./$($RunAsUserScript)" -Destination $CustomizationScriptsDir
         Copy-Item "./$($CleanupScript)" -Destination $CustomizationScriptsDir
     }
@@ -79,7 +77,7 @@ function InstallWinGet {
     Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
 
     Install-Module Microsoft.WinGet.Client -Scope AllUsers
-    Add-Content -Path "$($CustomizationScriptsDir)\$(RunAsUserScript)" -Value "Repair-WinGetPackageManager -Latest"
+    Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Repair-WinGetPackageManager -Latest"
 
     pwsh.exe -MTA -Command "Install-Module Microsoft.WinGet.Configuration -AllowPrerelease -Scope AllUsers"
 }
@@ -93,9 +91,9 @@ if (!(Test-Path -PathType Leaf "$($CustomizationScriptsDir)\$($LockFile)")) {
 
 if ($Package) {
     if ($RunAsUser -eq "true") {
-        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Install-WinGetPackage -Id $($Package)"
+        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Install-WinGetPackage -Id $($Package) > C:\b1.txt"
     } else {
-        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Install-WinGetPackage -Id $($Package)`""}
+        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Install-WinGetPackage -Id $($Package) > C:\b2.txt`""}
     }
 }
 
@@ -111,9 +109,9 @@ if ($ConfigurationFile) {
     }
 
     if ($RunAsUser -eq "true") {
-        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements > C:\a1.txt"
     } else {
-        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements`""}
+        Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements > C:\a2.txt`""}
     }
 }
 
