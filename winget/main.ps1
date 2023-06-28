@@ -56,7 +56,7 @@ function SetupScheduledTasks {
     $Trigger.Enabled = $true
 
     $Action = $Task.Actions.Create(0)
-    $Action.Path = "pwsh.exe"
+    $Action.Path = "C:\Program Files\PowerShell\7\pwsh.exe"
     $Action.Arguments = "-MTA -Command $($CustomizationScriptsDir)\$($RunAsUserScript)"
 
     $TaskFolder = $ShedService.GetFolder("\")
