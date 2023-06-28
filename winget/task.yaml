@@ -1,4 +1,4 @@
-name: winget
+name: winget-exp
 command: "./main.ps1 -ConfigurationFile {{configurationFile}} -DownloadUrl {{downloadUrl}} -Package {{package}} -RunAsUser {{runAsUser}}"
 inputs:
   configurationFile:

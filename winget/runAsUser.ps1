@@ -7,3 +7,4 @@ $RunAsUserTask = "DevBoxCustomizations"
 $CleanupTask = "DevBoxCustomizationsCleanup"
 
 Remove-Item -Path "$($CustomizationScriptsDir)\$($LockFile)"
+Start-Transcript -Path C:\Users\daellwan\a.txt

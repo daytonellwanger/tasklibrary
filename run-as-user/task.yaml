@@ -1,2 +1,0 @@
-name: run-as-user
-command: "./setup.ps1"
