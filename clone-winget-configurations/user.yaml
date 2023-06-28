@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+# Reference: https://github.com/microsoft/winget-cli-restsource#building-the-client
+properties:
+  configurationVersion: 0.2.0
+  resources:
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install VS Code
+        allowPrerelease: true
+      settings:
+        id: Microsoft.VisualStudioCode
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Git
+        allowPrerelease: true
+      settings:
+        id: Git.Git
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Postman
+        allowPrerelease: true
+      settings:
+        id: Postman.Postman
+        source: winget

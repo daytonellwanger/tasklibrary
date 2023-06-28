@@ -1,0 +1,2 @@
+name: clone-winget-configurations
+command: './main.ps1'

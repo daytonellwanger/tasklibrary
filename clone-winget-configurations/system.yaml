@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+# Reference: https://github.com/microsoft/winget-cli-restsource#building-the-client
+properties:
+  configurationVersion: 0.2.0
+  resources:
+    - resource: Microsoft.Windows.Developer/DeveloperMode
+      directives:
+        description: Enable Developer Mode
+        allowPrerelease: true
+      settings:
+        Ensure: Present
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Notepad++
+        allowPrerelease: true
+      settings:
+        id: Notepad++.Notepad++
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install .NET SDK
+        allowPrerelease: true
+      settings:
+        id: Microsoft.DotNet.SDK.6
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Visual Studio 2022
+        allowPrerelease: true
+      settings:
+        id: Microsoft.VisualStudio.2022.Enterprise.Preview
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Azure CLI
+        allowPrerelease: true
+      settings:
+        id: Microsoft.AzureCLI
+        source: winget
