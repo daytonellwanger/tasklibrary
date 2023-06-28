@@ -1,0 +1,7 @@
+name: git-clone
+command: "./main.ps1 -CloneUri {{cloneUri}}"
+inputs:
+  cloneUri:
+    type: string
+    defaultValue: ""    
+    required: true
