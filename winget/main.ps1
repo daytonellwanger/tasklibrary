@@ -108,6 +108,8 @@ if ($ConfigurationFile) {
     }
 
     if ($RunAsUser -eq "true") {
+        # Run twice to get around current bug in WinGet
+        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
         Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
         Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Stop-Transcript"
     } else {
