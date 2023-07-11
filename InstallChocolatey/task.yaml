@@ -1,2 +1,0 @@
-name: install-chocolatey
-command: "./install-chocolatey.ps1"
