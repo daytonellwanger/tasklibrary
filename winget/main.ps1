@@ -109,6 +109,7 @@ if ($ConfigurationFile) {
 
     if ($RunAsUser -eq "true") {
         Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value '$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")'
+        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "echo `$env:psmodulepath > C:\prepath.txt"
         Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Import-Module -Name Microsoft.WinGet.Client -Force"
         Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Import-Module -Name Microsoft.WinGet.Configuration -Force"
         Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
