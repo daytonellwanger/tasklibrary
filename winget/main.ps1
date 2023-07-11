@@ -108,9 +108,8 @@ if ($ConfigurationFile) {
     }
 
     if ($RunAsUser -eq "true") {
-        # Run twice to get around current bug in WinGet
-        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
-        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+        $Command = "Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements"
+        Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value "Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine=`"C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command $($Command)`"}"
         Add-Content -Path "$($CustomizationScriptsDir)\$($RunAsUserScript)" -Value '$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")'
     } else {
         Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Get-WinGetConfiguration -File $($ConfigurationFile) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements`""}
