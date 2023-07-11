@@ -6,4 +6,6 @@ $CleanupScript = "cleanup.ps1"
 $RunAsUserTask = "DevBoxCustomizations"
 $CleanupTask = "DevBoxCustomizationsCleanup"
 
+echo "Waiting on OneDrive initialization..."
+Start-Sleep -Seconds 120
 Remove-Item -Path "$($CustomizationScriptsDir)\$($LockFile)"
