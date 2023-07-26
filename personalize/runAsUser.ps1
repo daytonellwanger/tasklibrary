@@ -16,5 +16,5 @@ if (Test-Path -Path $PersonalizationScript) {
 
 $PersonalizationWinGet = "$([Environment]::GetFolderPath('MyDocuments'))\.devbox\winget.yaml"
 if (Test-Path -Path $PersonalizationWinGet) {
-    Get-WinGetConfiguration -File $PersonalizationWinGet | Invoke-WinGetConfiguration -AcceptConfigurationAgreements
+    Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine="C:\Program Files\PowerShell\7\pwsh.exe -MTA -Command `"Get-WinGetConfiguration -File $($PersonalizationWinGet) | Invoke-WinGetConfiguration -AcceptConfigurationAgreements`""}
 }

@@ -5,12 +5,10 @@ $CleanupScript = "cleanup.ps1"
 $RunAsUserTask = "DevBoxPersonalization"
 $CleanupTask = "DevBoxPersonalizationCleanup"
 
-if (!(Test-Path -PathType Container $PersonalizationScriptsDir)) {
-    New-Item -Path $PersonalizationScriptsDir -ItemType Directory
-    New-Item -Path "$($PersonalizationScriptsDir)\$($LockFile)" -ItemType File
-    Copy-Item "./$($RunAsUserScript)" -Destination $PersonalizationScriptsDir
-    Copy-Item "./$($CleanupScript)" -Destination $PersonalizationScriptsDir
-}
+New-Item -Path $PersonalizationScriptsDir -ItemType Directory
+New-Item -Path "$($PersonalizationScriptsDir)\$($LockFile)" -ItemType File
+Copy-Item "./$($RunAsUserScript)" -Destination $PersonalizationScriptsDir
+Copy-Item "./$($CleanupScript)" -Destination $PersonalizationScriptsDir
 
 # Reference: https://learn.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-objects
 $ShedService = New-Object -comobject "Schedule.Service"
@@ -44,8 +42,8 @@ $Trigger = $Task.Triggers.Create(9)
 $Trigger.Enabled = $true
 
 $Action = $Task.Actions.Create(0)
-$Action.Path = "C:\Program Files\PowerShell\7\pwsh.exe"
-$Action.Arguments = "-MTA -Command $($PersonalizationScriptsDir)\$($RunAsUserScript)"
+$Action.Path = "PowerShell.exe"
+$Action.Arguments = "Set-ExecutionPolicy Bypass -Scope Process -Force; $($PersonalizationScriptsDir)\$($RunAsUserScript)"
 
 $TaskFolder = $ShedService.GetFolder("\")
 $TaskFolder.RegisterTaskDefinition("$($RunAsUserTask)", $Task , 6, "Users", $null, 4)

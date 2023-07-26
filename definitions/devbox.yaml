@@ -4,7 +4,7 @@ hostInformation: general_i_32c128gb2048ssd_v2
 supportsHibernation: false
 setupTasks:
   - task: clone-winget-configurations-exp
-  - task: personalize
+  - task: personalize-exp
   - task: winget-exp
     inputs:
       configurationFile: C:\WinGetConfig\system.yaml
