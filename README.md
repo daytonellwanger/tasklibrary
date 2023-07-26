@@ -12,3 +12,4 @@ setupTasks:
     inputs:
       package: notepadplusplus
 ```
+
